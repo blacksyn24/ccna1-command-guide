@@ -1,0 +1,3326 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CCNA 1 — Guide des Commandes</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0c080f;
+    --bg2: #130d1a;
+    --bg3: #1a1025;
+    --border: #3d1f5f;
+    --accent1: #ff8c00;
+    --accent2: #bf5fff;
+    --accent3: #ff6b35;
+    --router: #ff8c00;
+    --switch: #bf5fff;
+    --pc: #ff6b35;
+    --mikrotik: #ff2d6b;
+    --text: #e8d8f0;
+    --text-dim: #7a5a9a;
+    --glow1: rgba(191,95,255,0.15);
+    --glow2: rgba(255,107,53,0.15);
+    --glow3: rgba(255,140,0,0.15);
+    --glow4: rgba(255,45,107,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Exo 2', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Animated grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: 
+      linear-gradient(rgba(191,95,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,140,0,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* HEADER */
+  header {
+    position: relative;
+    text-align: center;
+    padding: 60px 20px 40px;
+    z-index: 1;
+    overflow: hidden;
+  }
+
+  header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(191,95,255,0.1) 0%, rgba(255,140,0,0.05) 40%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .badge {
+    display: inline-block;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--accent2);
+    border: 1px solid var(--accent2);
+    padding: 5px 16px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    opacity: 0;
+    animation: fadeIn 0.5s 0.2s forwards;
+  }
+
+  h1 {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(32px, 6vw, 72px);
+    font-weight: 900;
+    letter-spacing: -1px;
+    line-height: 1;
+    margin-bottom: 16px;
+    opacity: 0;
+    animation: fadeIn 0.5s 0.4s forwards;
+  }
+
+  h1 span.ccna {
+    color: var(--accent2);
+    text-shadow: 0 0 30px rgba(191,95,255,0.6);
+  }
+
+  h1 span.num {
+    color: white;
+  }
+
+  .subtitle {
+    font-size: 14px;
+    color: var(--text-dim);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-family: 'Share Tech Mono', monospace;
+    opacity: 0;
+    animation: fadeIn 0.5s 0.6s forwards;
+  }
+
+  .dev-credit {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 18px;
+    padding: 8px 24px;
+    border: 1px solid rgba(191,95,255,0.3);
+    background: linear-gradient(135deg, rgba(191,95,255,0.06), rgba(255,140,0,0.06));
+    opacity: 0;
+    animation: fadeIn 0.5s 0.9s forwards;
+  }
+
+  .dev-credit-by {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .dev-credit-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    background: linear-gradient(90deg, var(--accent2), var(--accent1));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 1px;
+  }
+
+  /* STATS BAR */
+  .stats-bar {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    padding: 20px;
+    margin: 20px auto;
+    max-width: 700px;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    opacity: 0;
+    animation: fadeIn 0.5s 0.8s forwards;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'Orbitron', monospace;
+    font-size: 28px;
+    font-weight: 700;
+  }
+
+  .stat-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  .stat-num.s { color: var(--switch); text-shadow: 0 0 20px rgba(191,95,255,0.5); }
+  .stat-num.r { color: var(--router); text-shadow: 0 0 20px rgba(255,140,0,0.5); }
+  .stat-num.p { color: var(--pc); text-shadow: 0 0 20px rgba(255,107,53,0.5); }
+
+  /* NAV TABS */
+  .nav-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    padding: 20px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(8,12,20,0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tab-btn {
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    padding: 10px 24px;
+    background: transparent;
+    border: 1px solid;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .tab-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .tab-btn.switch-btn {
+    color: var(--switch);
+    border-color: var(--switch);
+  }
+
+  .tab-btn.switch-btn::before {
+    background: var(--glow1);
+  }
+
+  .tab-btn.router-btn {
+    color: var(--router);
+    border-color: var(--router);
+  }
+
+  .tab-btn.router-btn::before {
+    background: var(--glow3);
+  }
+
+  .tab-btn.pc-btn {
+    color: var(--pc);
+    border-color: var(--pc);
+  }
+
+  .tab-btn.pc-btn::before {
+    background: var(--glow2);
+  }
+
+  .tab-btn.active::before,
+  .tab-btn:hover::before {
+    opacity: 1;
+  }
+
+  .tab-btn.switch-btn.active,
+  .tab-btn.switch-btn:hover {
+    box-shadow: 0 0 20px rgba(191,95,255,0.3);
+  }
+
+  .tab-btn.router-btn.active,
+  .tab-btn.router-btn:hover {
+    box-shadow: 0 0 20px rgba(255,140,0,0.3);
+  }
+
+  .tab-btn.pc-btn.active,
+  .tab-btn.pc-btn:hover {
+    box-shadow: 0 0 20px rgba(255,107,53,0.3);
+  }
+
+  .tab-btn.mikrotik-btn {
+    color: var(--mikrotik);
+    border-color: var(--mikrotik);
+  }
+
+  .tab-btn.mikrotik-btn::before {
+    background: var(--glow4);
+  }
+
+  .tab-btn.mikrotik-btn.active,
+  .tab-btn.mikrotik-btn:hover {
+    box-shadow: 0 0 20px rgba(255,45,107,0.4);
+  }
+
+  /* MAIN CONTENT */
+  main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .section {
+    display: none;
+    animation: fadeIn 0.4s forwards;
+  }
+
+  .section.active {
+    display: block;
+  }
+
+  /* SECTION HEADER */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 40px;
+  }
+
+  .section-icon {
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    border: 2px solid;
+    flex-shrink: 0;
+  }
+
+  .section-icon.s { border-color: var(--switch); color: var(--switch); background: var(--glow1); }
+  .section-icon.r { border-color: var(--router); color: var(--router); background: var(--glow3); }
+  .section-icon.p { border-color: var(--pc); color: var(--pc); background: var(--glow2); }
+  .section-icon.m { border-color: var(--mikrotik); color: var(--mikrotik); background: var(--glow4); }
+
+  .section-title {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(20px, 4vw, 36px);
+    font-weight: 900;
+  }
+
+  .section-title.s { color: var(--switch); text-shadow: 0 0 20px rgba(191,95,255,0.3); }
+  .section-title.r { color: var(--router); text-shadow: 0 0 20px rgba(255,140,0,0.3); }
+  .section-title.p { color: var(--pc); text-shadow: 0 0 20px rgba(255,107,53,0.3); }
+  .section-title.m { color: var(--mikrotik); text-shadow: 0 0 20px rgba(255,45,107,0.4); }
+
+  .section-desc {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-top: 4px;
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  /* CATEGORY */
+  .category {
+    margin-bottom: 48px;
+  }
+
+  .category-title {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    padding: 8px 0;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .category-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* COMMAND CARDS GRID */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 16px;
+  }
+
+  .cmd-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 20px;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+    cursor: default;
+  }
+
+  .cmd-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    transition: all 0.3s;
+  }
+
+  .cmd-card.s::before { background: var(--switch); }
+  .cmd-card.r::before { background: var(--router); }
+  .cmd-card.p::before { background: var(--pc); }
+  .cmd-card.m::before { background: var(--mikrotik); }
+
+  .cmd-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--text-dim);
+  }
+
+  .cmd-card.s:hover { box-shadow: 0 8px 30px rgba(191,95,255,0.12); border-color: rgba(191,95,255,0.3); }
+  .cmd-card.r:hover { box-shadow: 0 8px 30px rgba(255,140,0,0.12); border-color: rgba(255,140,0,0.3); }
+  .cmd-card.p:hover { box-shadow: 0 8px 30px rgba(255,107,53,0.12); border-color: rgba(255,107,53,0.3); }
+  .cmd-card.m:hover { box-shadow: 0 8px 30px rgba(255,45,107,0.15); border-color: rgba(255,45,107,0.4); }
+
+  .cmd-syntax {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    padding: 10px 14px;
+    background: var(--bg3);
+    border-left: 2px solid;
+    margin-bottom: 12px;
+    word-break: break-all;
+    line-height: 1.6;
+  }
+
+  .cmd-card.s .cmd-syntax { border-color: var(--switch); color: var(--switch); }
+  .cmd-card.r .cmd-syntax { border-color: var(--router); color: var(--router); }
+  .cmd-card.p .cmd-syntax { border-color: var(--pc); color: var(--pc); }
+  .cmd-card.m .cmd-syntax { border-color: var(--mikrotik); color: var(--mikrotik); }
+
+  .cmd-role {
+    font-size: 13px;
+    color: var(--text);
+    margin-bottom: 12px;
+    line-height: 1.5;
+    font-weight: 300;
+  }
+
+  .cmd-role strong {
+    font-weight: 600;
+  }
+
+  .cmd-example {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    background: rgba(0,0,0,0.3);
+    padding: 10px 12px;
+    border-radius: 2px;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  .example-label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+    opacity: 0.7;
+  }
+
+  /* COPY BUTTON */
+  .cmd-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+  }
+
+  .copy-btn {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1px;
+    padding: 3px 8px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+    margin-left: 8px;
+  }
+
+  .copy-btn:hover {
+    border-color: var(--text-dim);
+    color: var(--text);
+  }
+
+  .copy-btn.copied {
+    color: var(--pc);
+    border-color: var(--pc);
+  }
+
+  /* FOOTER */
+  footer {
+    text-align: center;
+    padding: 40px 20px;
+    border-top: 1px solid var(--border);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .footer-dev {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding: 16px 32px;
+    border: 1px solid var(--border);
+    background: linear-gradient(135deg, rgba(191,95,255,0.08), rgba(255,140,0,0.08));
+    display: inline-flex;
+    position: relative;
+  }
+
+  .footer-dev::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(191,95,255,0.05), rgba(255,140,0,0.05), transparent);
+  }
+
+  .dev-label {
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .dev-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    background: linear-gradient(90deg, var(--accent2), var(--accent1));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 2px;
+  }
+
+  footer span {
+    color: var(--accent2);
+  }
+
+  /* SEARCH */
+  .search-wrap {
+    max-width: 500px;
+    margin: 0 auto 32px;
+  }
+
+  .search-input {
+    width: 100%;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    padding: 12px 16px 12px 40px;
+    outline: none;
+    transition: border-color 0.3s;
+    position: relative;
+  }
+
+  .search-input:focus {
+    border-color: var(--accent2);
+    box-shadow: 0 0 15px rgba(191,95,255,0.15);
+  }
+
+  .search-wrap-inner {
+    position: relative;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-dim);
+    font-size: 14px;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    .cards-grid { grid-template-columns: 1fr; }
+    .stats-bar { gap: 20px; }
+    .tab-btn { font-size: 9px; padding: 8px 14px; letter-spacing: 1px; }
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent2); }
+
+  /* HIGHLIGHT */
+  .highlight { background: rgba(191,95,255,0.15); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge">Cisco Networking Academy</div>
+  <h1><span class="ccna">CCNA</span> <span class="num">1</span></h1>
+  <p class="subtitle">Guide Complet des Commandes IOS</p>
+  <div class="dev-credit">
+    <span class="dev-credit-by">Développé par</span>
+    <span class="dev-credit-name">LANDJIDE Urbain Sedami</span>
+  </div>
+  <div class="stats-bar">
+    <div class="stat">
+      <div class="stat-num s">40+</div>
+      <div class="stat-label">Cmds Switch</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num r">45+</div>
+      <div class="stat-label">Cmds Routeur</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num p">12+</div>
+      <div class="stat-label">Cmds PC/Hôte</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" style="color:var(--mikrotik);text-shadow:0 0 20px rgba(255,45,107,0.5);">50+</div>
+      <div class="stat-label">Cmds MikroTik</div>
+    </div>
+  </div>
+</header>
+
+<!-- NAV TABS -->
+<nav class="nav-tabs">
+  <button class="tab-btn switch-btn active" onclick="showSection('switch', this)">⚡ Switch</button>
+  <button class="tab-btn router-btn" onclick="showSection('router', this)">🔺 Routeur</button>
+  <button class="tab-btn pc-btn" onclick="showSection('pc', this)">💻 PC / Hôte</button>
+  <button class="tab-btn mikrotik-btn" onclick="showSection('mikrotik', this)">🔴 MikroTik</button>
+</nav>
+
+<main>
+
+  <!-- SEARCH -->
+  <div class="search-wrap">
+    <div class="search-wrap-inner">
+      <span class="search-icon">🔍</span>
+      <input type="text" class="search-input" placeholder="Rechercher une commande..." oninput="filterCards(this.value)" id="searchInput">
+    </div>
+  </div>
+
+  <!-- ===== SWITCH SECTION ===== -->
+  <div class="section active" id="section-switch">
+    <div class="section-header">
+      <div class="section-icon s">⚡</div>
+      <div>
+        <div class="section-title s">Switch Cisco</div>
+        <div class="section-desc">// Commandes IOS pour commutateurs de couche 2</div>
+      </div>
+    </div>
+
+    <!-- Navigation de base -->
+    <div class="category">
+      <div class="category-title">01 — Navigation & Modes</div>
+      <div class="cards-grid">
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch> enable</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'enable')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Passer du mode utilisateur au mode privilégié (EXEC)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">Switch> enable
+Switch#</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch# disable</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'disable')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Retourner en mode utilisateur depuis le mode privilégié</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">Switch# disable
+Switch></div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch# configure terminal</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'configure terminal')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Entrer en mode configuration globale</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">Switch# configure terminal
+Switch(config)#</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch(config)# exit</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'exit')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Quitter le mode actuel et revenir au mode précédent</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">Switch(config-if)# exit
+Switch(config)#</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch(config)# end</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'end')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Retourner directement en mode privilégié depuis n'importe quel sous-mode</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">Switch(config-if)# end
+Switch#</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Configuration de base -->
+    <div class="category">
+      <div class="category-title">02 — Configuration de Base</div>
+      <div class="cards-grid">
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch(config)# hostname NOM</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'hostname NOM')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Changer le nom d'affichage du switch</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">Switch(config)# hostname SW1
+SW1(config)#</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch(config)# banner motd #MSG#</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'banner motd #MESSAGE#')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher un message d'avertissement à chaque connexion</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1(config)# banner motd #
+Acces autorise uniquement !
+#</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch(config)# service password-encryption</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'service password-encryption')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Chiffrer tous les mots de passe en clair dans la configuration</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1(config)# service password-encryption
+SW1(config)# show run
+ password 7 0822455D0A16</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch# clock set HH:MM:SS JJ MOIS AAAA</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'clock set 21:00:00 21 March 2026')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Régler manuellement l'heure et la date du switch</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1# clock set 21:00:00 21 March 2026</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mots de passe -->
+    <div class="category">
+      <div class="category-title">03 — Sécurité & Mots de Passe</div>
+      <div class="cards-grid">
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch(config)# enable secret MOT_DE_PASSE</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'enable secret MOT_DE_PASSE')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Définir un mot de passe chiffré (MD5) pour le mode privilégié. Préféré à <em>enable password</em>.</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1(config)# enable secret Cisco123</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch(config)# enable password MOT_DE_PASSE</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'enable password MOT_DE_PASSE')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Définir un mot de passe non chiffré pour le mode privilégié (moins sécurisé)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1(config)# enable password Cisco123</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">line console 0
+password MOT_DE_PASSE
+login</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'line console 0\npassword MOT_DE_PASSE\nlogin')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Sécuriser l'accès console par un mot de passe</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1(config)# line console 0
+SW1(config-line)# password Console123
+SW1(config-line)# login</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">line vty 0 15
+password MOT_DE_PASSE
+login</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'line vty 0 15\npassword MOT_DE_PASSE\nlogin')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Sécuriser les 16 lignes Telnet/SSH avec un mot de passe</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1(config)# line vty 0 15
+SW1(config-line)# password Telnet123
+SW1(config-line)# login</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch(config-line)# login local</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'login local')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Utiliser la base de données locale (username/password) pour l'authentification</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1(config)# line vty 0 15
+SW1(config-line)# login local</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch(config)# username USER secret PASS</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'username admin secret Admin123')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Créer un compte utilisateur local avec mot de passe chiffré</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1(config)# username admin secret Admin123</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch(config-line)# exec-timeout 10 0</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'exec-timeout 10 0')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Déconnecter automatiquement après 10 minutes d'inactivité</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1(config-line)# exec-timeout 10 0</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch(config-line)# logging synchronous</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'logging synchronous')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Empêcher les messages système d'interrompre la saisie de commandes</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1(config-line)# logging synchronous</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Interfaces physiques -->
+    <div class="category">
+      <div class="category-title">04 — Interfaces Physiques</div>
+      <div class="cards-grid">
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch(config)# interface fastethernet 0/1</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'interface fastethernet 0/1')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Accéder à la configuration d'un port FastEthernet spécifique</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1(config)# interface fastethernet 0/1
+SW1(config-if)#</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch(config)# interface range fa0/1-12</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'interface range fastethernet 0/1-12')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Configurer plusieurs ports simultanément (utile pour shutdown en masse)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1(config)# interface range fa0/1-12
+SW1(config-if-range)# shutdown</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch(config-if)# description TEXTE</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'description Connecte au PC1')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Ajouter une description textuelle à une interface pour l'identifier facilement</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1(config-if)# description Connecte au PC1</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch(config-if)# no shutdown</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'no shutdown')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Activer une interface qui était désactivée administrativement</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1(config-if)# no shutdown
+%LINK-5-CHANGED: Fa0/1 changed state to up</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch(config-if)# shutdown</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'shutdown')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Désactiver administrativement une interface</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1(config-if)# shutdown
+%LINK-5-CHANGED: Fa0/1 changed state to down</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch(config-if)# duplex full</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'duplex full')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Forcer le mode full-duplex (transmission simultanée dans les 2 sens)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1(config-if)# duplex full</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch(config-if)# speed 100</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'speed 100')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Forcer la vitesse à 100 Mbps (valeurs: 10, 100, 1000, auto)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1(config-if)# speed 100</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch(config-if)# mdix auto</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'mdix auto')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Activer la détection automatique du type de câble (droit ou croisé)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1(config-if)# mdix auto</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Interface VLAN -->
+    <div class="category">
+      <div class="category-title">05 — Interface VLAN & Gestion IP</div>
+      <div class="cards-grid">
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch(config)# interface vlan 1</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'interface vlan 1')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Accéder à l'interface virtuelle de gestion du switch (VLAN 1 par défaut)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1(config)# interface vlan 1
+SW1(config-if)#</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch(config-if)# ip address IP MASQUE</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'ip address 192.168.1.10 255.255.255.0')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Assigner une adresse IPv4 à l'interface de gestion du switch</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1(config-if)# ip address 192.168.1.10 255.255.255.0
+SW1(config-if)# no shutdown</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch(config)# ip default-gateway IP</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'ip default-gateway 192.168.1.1')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Définir la passerelle par défaut du switch pour accès depuis d'autres réseaux</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1(config)# ip default-gateway 192.168.1.1</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch(config-if)# no ip address</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'no ip address')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Supprimer l'adresse IP assignée à l'interface de gestion</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1(config-if)# no ip address</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SSH Switch -->
+    <div class="category">
+      <div class="category-title">06 — Configuration SSH</div>
+      <div class="cards-grid">
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch(config)# ip domain-name NOM.COM</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'ip domain-name cisco.com')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Définir le nom de domaine du switch (requis pour générer les clés SSH)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1(config)# ip domain-name cisco.com</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch(config)# crypto key generate rsa</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'crypto key generate rsa')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Générer les clés RSA nécessaires au fonctionnement de SSH</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1(config)# crypto key generate rsa
+How many bits in the modulus [512]: 1024</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch(config)# ip ssh version 2</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'ip ssh version 2')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Forcer l'utilisation de SSH version 2 (plus sécurisée)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1(config)# ip ssh version 2</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch(config-line)# transport input ssh</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'transport input ssh')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Autoriser uniquement SSH (bloquer Telnet) sur les lignes VTY</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1(config)# line vty 0 15
+SW1(config-line)# transport input ssh</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch(config-line)# transport input all</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'transport input all')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Autoriser à la fois Telnet et SSH sur les lignes VTY</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1(config-line)# transport input all</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch(config-line)# transport input none</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'transport input none')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Bloquer tout accès distant (ni Telnet ni SSH)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1(config-line)# transport input none</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sauvegarde -->
+    <div class="category">
+      <div class="category-title">07 — Sauvegarde & Restauration</div>
+      <div class="cards-grid">
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch# copy running-config startup-config</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'copy running-config startup-config')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Sauvegarder la configuration active (RAM) en mémoire permanente (NVRAM)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1# copy running-config startup-config
+Destination filename [startup-config]?
+Building configuration... [OK]</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch# copy startup-config running-config</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'copy startup-config running-config')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Charger la configuration sauvegardée dans la configuration active</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1# copy startup-config running-config</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch# erase startup-config</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'erase startup-config')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Effacer la configuration sauvegardée (remise à zéro complète)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1# erase startup-config
+Erasing... Continue? [confirm]</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch# delete vlan.dat</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'delete vlan.dat')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Supprimer la base de données VLAN (nécessaire pour réinitialisation complète)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1# delete vlan.dat
+Delete filename [vlan.dat]? [ENTER]</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch# reload</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'reload')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Redémarrer le switch (appliquer après erase startup-config)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1# reload
+Proceed with reload? [confirm]</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Show commands Switch -->
+    <div class="category">
+      <div class="category-title">08 — Commandes SHOW (Diagnostic)</div>
+      <div class="cards-grid">
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch# show running-config</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'show running-config')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher la configuration active en RAM (non sauvegardée)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1# show running-config
+hostname SW1
+interface Vlan1
+ ip address 192.168.1.10 255.255.255.0</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch# show startup-config</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'show startup-config')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher la configuration sauvegardée en NVRAM</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1# show startup-config</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch# show version</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'show version')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher les informations sur le matériel et la version IOS</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1# show version
+Cisco IOS Software, Version 15.0(2)SE4
+RAM: 64MB, Flash: 32MB</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch# show ip interface brief</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'show ip interface brief')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Résumé rapide du statut de toutes les interfaces (IP, statut ligne et protocole)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1# show ip interface brief
+Interface    IP-Address    Status   Protocol
+Vlan1        192.168.1.10  up       up
+Fa0/1        unassigned    up       up</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch# show interfaces</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'show interfaces')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher les détails complets de toutes les interfaces (statistiques, erreurs, etc.)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1# show interfaces
+FastEthernet0/1 is up, line protocol is up
+  Hardware: Fast Ethernet, address: 0060.2F84.4502
+  MTU 1500 bytes, BW 100000 Kbit/sec</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch# show mac address-table</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'show mac address-table')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher la table des adresses MAC apprises par le switch sur chaque port</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1# show mac address-table
+Vlan  Mac Address        Type     Ports
+1     0060.2f84.4502     DYNAMIC  Fa0/1
+1     0050.7966.6800     DYNAMIC  Fa0/2</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch# show mac address-table dynamic</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'show mac address-table dynamic')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher uniquement les entrées MAC apprises dynamiquement</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1# show mac address-table dynamic</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch# show arp</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'show arp')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher la table ARP du switch (correspondances IP ↔ MAC)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1# show arp
+Protocol  Address      Age  Hardware Addr    Type  Interface
+Internet  192.168.1.1  1    0060.2f84.4502   ARPA  Vlan1</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch# show vlan brief</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'show vlan brief')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher un résumé des VLANs configurés et les ports associés</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1# show vlan brief
+VLAN  Name     Status  Ports
+1     default  active  Fa0/1, Fa0/2, Fa0/3...</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch# show flash</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'show flash')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher le contenu de la mémoire flash (fichiers IOS, configuration)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1# show flash
+Directory of flash:/
+c2960-lanbasek9-mz.150-2.SE4.bin</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch# show history</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'show history')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher l'historique des dernières commandes saisies</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1# show history
+  show version
+  show interfaces
+  show ip interface brief</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch# show cdp neighbors</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'show cdp neighbors')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher les équipements Cisco voisins directement connectés via CDP</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1# show cdp neighbors
+Device ID  Local Intf  Holdtime  Platform  Port ID
+R1         Fa0/1       150       C1941     Gi0/0</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch# show cdp neighbors detail</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'show cdp neighbors detail')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher les détails complets des voisins CDP (inclut l'adresse IP)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1# show cdp neighbors detail
+Device ID: R1
+  IP address: 192.168.1.1</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch# show ssh</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'show ssh')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher les sessions SSH actives et la configuration SSH</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1# show ssh
+Connection  Version  State    Username
+0           2.0      Session  admin</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch# show users</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'show users')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher les utilisateurs actuellement connectés au switch</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1# show users
+Line    User  Host(s)  Idle
+0 con 0       idle     00:00:00</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch# show clock</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'show clock')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher l'heure et la date actuelles configurées sur le switch</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1# show clock
+*21:15:30.000 UTC Sat Mar 21 2026</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dépannage Switch -->
+    <div class="category">
+      <div class="category-title">09 — Dépannage</div>
+      <div class="cards-grid">
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch# ping 192.168.1.1</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'ping 192.168.1.1')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Tester la connectivité réseau vers une adresse IP cible</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1# ping 192.168.1.1
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 1/1/4 ms</div>
+        </div>
+        <div class="cmd-card s">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Switch# traceroute 192.168.1.1</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'traceroute 192.168.1.1')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Tracer le chemin des paquets vers une destination (affiche chaque saut)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">SW1# traceroute 192.168.1.1
+1  192.168.1.1  1 msec</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end section-switch -->
+
+
+  <!-- ===== ROUTER SECTION ===== -->
+  <div class="section" id="section-router">
+    <div class="section-header">
+      <div class="section-icon r">🔺</div>
+      <div>
+        <div class="section-title r">Routeur Cisco</div>
+        <div class="section-desc">// Commandes IOS pour routeurs de couche 3</div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="category">
+      <div class="category-title">01 — Navigation & Modes</div>
+      <div class="cards-grid">
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router> enable</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'enable')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Passer en mode privilégié (EXEC)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">Router> enable
+Router#</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router# configure terminal</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'configure terminal')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Entrer en mode configuration globale</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">Router# configure terminal
+Router(config)#</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router(config)# exit / end</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'exit')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> <em>exit</em> = revenir au mode précédent | <em>end</em> = retourner directement en mode privilégié</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">Router(config-if)# end
+Router#</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Config de base Routeur -->
+    <div class="category">
+      <div class="category-title">02 — Configuration de Base</div>
+      <div class="cards-grid">
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router(config)# hostname NOM</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'hostname R1')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Changer le nom du routeur</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">Router(config)# hostname R1
+R1(config)#</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router(config)# banner motd #MSG#</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'banner motd #Acces autorise uniquement!#')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Message d'avertissement affiché à chaque connexion</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1(config)# banner motd #
+Acces interdit aux non autorises !
+#</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router(config)# service password-encryption</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'service password-encryption')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Chiffrer automatiquement tous les mots de passe en clair</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1(config)# service password-encryption</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router# clock set HH:MM:SS JJ MOIS AAAA</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'clock set 21:00:00 21 March 2026')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Régler manuellement l'horloge du routeur</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1# clock set 21:00:00 21 March 2026</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mots de passe Routeur -->
+    <div class="category">
+      <div class="category-title">03 — Sécurité & Mots de Passe</div>
+      <div class="cards-grid">
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router(config)# enable secret MOT_DE_PASSE</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'enable secret Cisco123')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Mot de passe chiffré MD5 pour accès au mode privilégié</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1(config)# enable secret Cisco123</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">line console 0
+password PASS
+login</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'line console 0\npassword Console123\nlogin')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Sécuriser l'accès physique console par un mot de passe</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1(config)# line console 0
+R1(config-line)# password Console123
+R1(config-line)# login</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">line vty 0 4
+password PASS
+login</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'line vty 0 4\npassword Telnet123\nlogin')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Sécuriser les 5 lignes Telnet/SSH avec un mot de passe</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1(config)# line vty 0 4
+R1(config-line)# password Telnet123
+R1(config-line)# login</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router(config)# username USER secret PASS</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'username admin secret Admin123')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Créer un compte utilisateur local pour l'authentification SSH</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1(config)# username admin secret Admin123</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router(config-line)# exec-timeout 10 0</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'exec-timeout 10 0')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Déconnexion automatique après 10 minutes d'inactivité</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1(config-line)# exec-timeout 10 0</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router(config-line)# logging synchronous</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'logging synchronous')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Éviter que les messages système interrompent la saisie de commandes</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1(config-line)# logging synchronous</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Interfaces Routeur -->
+    <div class="category">
+      <div class="category-title">04 — Configuration des Interfaces</div>
+      <div class="cards-grid">
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router(config)# interface gigabitethernet 0/0</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'interface gigabitethernet 0/0')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Accéder à la configuration d'une interface GigabitEthernet</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1(config)# interface gigabitethernet 0/0
+R1(config-if)#</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router(config)# interface serial 0/0/0</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'interface serial 0/0/0')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Accéder à une interface série (connexion WAN point à point)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1(config)# interface serial 0/0/0
+R1(config-if)#</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router(config)# interface loopback 0</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'interface loopback 0')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Créer une interface logique virtuelle (toujours active, utilisée pour tests et identifiants)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1(config)# interface loopback 0
+R1(config-if)# ip address 1.1.1.1 255.255.255.0</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router(config-if)# ip address IP MASQUE</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'ip address 192.168.1.1 255.255.255.0')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Assigner une adresse IPv4 et son masque de sous-réseau à une interface</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1(config-if)# ip address 192.168.1.1 255.255.255.0
+R1(config-if)# no shutdown</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router(config-if)# ipv6 address IPV6/PREFIX</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'ipv6 address 2001:db8:1::1/64')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Assigner une adresse IPv6 globale unicast à une interface</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1(config-if)# ipv6 address 2001:db8:1::1/64</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router(config-if)# ipv6 address fe80::1 link-local</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'ipv6 address fe80::1 link-local')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Assigner manuellement une adresse IPv6 link-local à une interface</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1(config-if)# ipv6 address fe80::1 link-local</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router(config-if)# description TEXTE</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'description Lien vers Switch1')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Ajouter une description textuelle à une interface pour documentation</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1(config-if)# description Lien vers Switch1</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router(config-if)# no shutdown</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'no shutdown')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Activer l'interface (les interfaces routeur sont OFF par défaut, contrairement au switch)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1(config-if)# no shutdown
+%LINK-5-CHANGED: GigabitEthernet0/0 changed state to up</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router(config-if)# clock rate 64000</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'clock rate 64000')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Définir la fréquence d'horloge sur une interface série DCE (côté fournisseur)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1(config-if)# clock rate 64000</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router(config-if)# bandwidth 64</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'bandwidth 64')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Définir la bande passante logique (en Kbps) pour les calculs des protocoles de routage</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1(config-if)# bandwidth 64</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router(config-if)# no ip address</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'no ip address')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Supprimer l'adresse IP assignée à une interface</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1(config-if)# no ip address</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Routage statique -->
+    <div class="category">
+      <div class="category-title">05 — Routage Statique IPv4</div>
+      <div class="cards-grid">
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router(config)# ip route RESEAU MASQUE NEXT-HOP</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'ip route 192.168.2.0 255.255.255.0 192.168.1.2')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Ajouter une route statique via l'adresse IP du prochain saut (next-hop)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1(config)# ip route 192.168.2.0 255.255.255.0 192.168.1.2</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router(config)# ip route RESEAU MASQUE INTERFACE</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'ip route 192.168.2.0 255.255.255.0 gigabitethernet 0/1')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Ajouter une route statique via une interface de sortie</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1(config)# ip route 192.168.2.0 255.255.255.0 gi0/1</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router(config)# ip route 0.0.0.0 0.0.0.0 NEXT-HOP</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'ip route 0.0.0.0 0.0.0.0 192.168.1.254')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Configurer la route par défaut (gateway of last resort) — pour tout le trafic sans correspondance</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1(config)# ip route 0.0.0.0 0.0.0.0 192.168.1.254</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router(config)# no ip route RESEAU MASQUE NEXT-HOP</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'no ip route 192.168.2.0 255.255.255.0 192.168.1.2')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Supprimer une route statique existante de la table de routage</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1(config)# no ip route 192.168.2.0 255.255.255.0 192.168.1.2</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- IPv6 Routage -->
+    <div class="category">
+      <div class="category-title">06 — Routage IPv6</div>
+      <div class="cards-grid">
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router(config)# ipv6 unicast-routing</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'ipv6 unicast-routing')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Activer le routage IPv6 sur le routeur (désactivé par défaut)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1(config)# ipv6 unicast-routing</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router(config)# ipv6 route IPV6/PREFIX NEXT-HOP</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'ipv6 route 2001:db8:2::/64 2001:db8:1::2')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Ajouter une route statique IPv6</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1(config)# ipv6 route 2001:db8:2::/64 2001:db8:1::2</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router(config)# ipv6 route ::/0 NEXT-HOP</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'ipv6 route ::/0 2001:db8:1::1')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Configurer la route par défaut IPv6 (équivalent de 0.0.0.0/0 en IPv4)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1(config)# ipv6 route ::/0 2001:db8:1::1</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SSH Routeur -->
+    <div class="category">
+      <div class="category-title">07 — Configuration SSH</div>
+      <div class="cards-grid">
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router(config)# ip domain-name NOM.COM</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'ip domain-name cisco.com')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Définir le nom de domaine du routeur (requis pour SSH)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1(config)# ip domain-name cisco.com</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router(config)# crypto key generate rsa</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'crypto key generate rsa')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Générer les clés RSA pour SSH (utiliser 1024 bits minimum)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1(config)# crypto key generate rsa
+How many bits in the modulus [512]: 1024</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router(config)# ip ssh version 2</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'ip ssh version 2')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Forcer SSH version 2 (plus sécurisée que v1)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1(config)# ip ssh version 2</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router(config-line)# transport input ssh</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'transport input ssh')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> N'autoriser que SSH sur les lignes VTY (bloquer Telnet)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1(config)# line vty 0 4
+R1(config-line)# transport input ssh
+R1(config-line)# login local</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sauvegarde Routeur -->
+    <div class="category">
+      <div class="category-title">08 — Sauvegarde & Restauration</div>
+      <div class="cards-grid">
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router# copy running-config startup-config</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'copy running-config startup-config')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Sauvegarder la configuration active en mémoire permanente (NVRAM)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1# copy running-config startup-config
+Building configuration... [OK]</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router# erase startup-config</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'erase startup-config')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Effacer la configuration sauvegardée (réinitialisation complète)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1# erase startup-config
+Erasing... [confirm]</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router# reload</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'reload')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Redémarrer le routeur</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1# reload
+Proceed with reload? [confirm]</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Show commands Routeur -->
+    <div class="category">
+      <div class="category-title">09 — Commandes SHOW (Diagnostic)</div>
+      <div class="cards-grid">
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router# show running-config</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'show running-config')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher la configuration active en RAM</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1# show running-config
+hostname R1
+interface GigabitEthernet0/0
+ ip address 192.168.1.1 255.255.255.0</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router# show ip interface brief</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'show ip interface brief')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Résumé rapide du statut de toutes les interfaces du routeur</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1# show ip interface brief
+Interface          IP-Address     Status   Protocol
+GigabitEthernet0/0 192.168.1.1    up       up
+Serial0/0/0        10.0.0.1       up       up</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router# show ip route</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'show ip route')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher la table de routage IPv4 complète (C=direct, S=statique, R=RIP, etc.)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1# show ip route
+C   192.168.1.0/24 is directly connected, Gi0/0
+S   192.168.2.0/24 [1/0] via 192.168.1.2
+S*  0.0.0.0/0 [1/0] via 192.168.1.254</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router# show ipv6 route</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'show ipv6 route')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher la table de routage IPv6</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1# show ipv6 route
+C   2001:DB8:1::/64 [0/0] via GigabitEthernet0/0
+S   2001:DB8:2::/64 [1/0] via 2001:DB8:1::2</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router# show ipv6 interface brief</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'show ipv6 interface brief')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Résumé du statut des interfaces avec leurs adresses IPv6</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1# show ipv6 interface brief
+GigabitEthernet0/0 [up/up]
+  FE80::1
+  2001:DB8:1::1</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router# show interfaces</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'show interfaces')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Détails complets de toutes les interfaces (statistiques, erreurs, MTU, etc.)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1# show interfaces
+GigabitEthernet0/0 is up, line protocol is up
+  Internet address is 192.168.1.1/24
+  MTU 1500 bytes, BW 1000000 Kbit/sec</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router# show arp</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'show arp')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher la table ARP du routeur (IP ↔ MAC pour chaque interface)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1# show arp
+Protocol  Address       Age  Hardware Addr    Type  Interface
+Internet  192.168.1.10  5    0060.2F84.4502   ARPA  Gi0/0</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router# show version</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'show version')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher les informations matérielles, IOS, RAM, Flash et interfaces</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1# show version
+Cisco IOS Software, Version 15.2(4)M5
+RAM: 256MB, Flash: 256MB</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router# show flash</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'show flash')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher le contenu de la mémoire flash (fichier IOS et espace disponible)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1# show flash
+Directory of flash:/
+c1900-universalk9-mz.SPA.151-4.M4.bin</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router# show protocols</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'show protocols')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher les protocoles de couche 3 actifs sur chaque interface</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1# show protocols
+GigabitEthernet0/0 is up, line protocol is up
+  Internet address is 192.168.1.1/24</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router# show cdp neighbors</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'show cdp neighbors')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher les équipements Cisco voisins directement connectés</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1# show cdp neighbors
+Device ID  Local Intf  Platform  Port ID
+SW1        Gi0/0       C2960     Fa0/1</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router# show cdp neighbors detail</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'show cdp neighbors detail')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Détails complets des voisins CDP avec adresses IP</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1# show cdp neighbors detail
+Device ID: SW1
+  IP address: 192.168.1.10</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router# show history</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'show history')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher l'historique des commandes récentes saisies</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1# show history
+  show ip route
+  show interfaces</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router# show ssh</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'show ssh')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher les sessions SSH actives et la version SSH configurée</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1# show ssh
+Connection  Version  State    Username
+0           2.0      Session  admin</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router# show users</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'show users')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher les utilisateurs actuellement connectés au routeur</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1# show users
+Line    User  Idle
+0 con 0       00:00:00</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router# show clock</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'show clock')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher l'heure et la date actuelles du routeur</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1# show clock
+*21:15:30.000 UTC Sat Mar 21 2026</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Debug Routeur -->
+    <div class="category">
+      <div class="category-title">10 — Dépannage & Debug</div>
+      <div class="cards-grid">
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router# ping 192.168.1.1</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'ping 192.168.1.1')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Tester la connectivité réseau vers une adresse IP</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1# ping 192.168.1.1
+!!!!!
+Success rate is 100 percent (5/5)
+round-trip min/avg/max = 1/1/4 ms</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router# ping IP source INTERFACE</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'ping 192.168.2.1 source gigabitethernet 0/0')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Ping étendu depuis une interface source spécifique</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1# ping 192.168.2.1 source gigabitethernet 0/0</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router# traceroute 192.168.2.1</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'traceroute 192.168.2.1')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Tracer le chemin des paquets jusqu'à la destination (affiche chaque saut)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1# traceroute 192.168.2.1
+1  192.168.1.2  2 msec
+2  192.168.2.1  4 msec</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router# debug ip routing</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'debug ip routing')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher en temps réel les mises à jour de la table de routage</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1# debug ip routing
+IP routing debugging is on</div>
+        </div>
+        <div class="cmd-card r">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Router# no debug all</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'no debug all')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Désactiver tous les débogages actifs (alias : undebug all)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">R1# no debug all
+All possible debugging has been turned off</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end section-router -->
+
+
+  <!-- ===== PC / HÔTE SECTION ===== -->
+  <div class="section" id="section-pc">
+    <div class="section-header">
+      <div class="section-icon p">💻</div>
+      <div>
+        <div class="section-title p">PC / Hôte Windows</div>
+        <div class="section-desc">// Commandes de diagnostic réseau sur postes de travail</div>
+      </div>
+    </div>
+
+    <!-- IP Config -->
+    <div class="category">
+      <div class="category-title">01 — Configuration IP</div>
+      <div class="cards-grid">
+        <div class="cmd-card p">
+          <div class="cmd-header">
+            <div class="cmd-syntax">C:\> ipconfig</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'ipconfig')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher la configuration IP de base (adresse, masque, passerelle)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">C:\> ipconfig
+IPv4 Address: 192.168.1.10
+Subnet Mask: 255.255.255.0
+Default Gateway: 192.168.1.1</div>
+        </div>
+        <div class="cmd-card p">
+          <div class="cmd-header">
+            <div class="cmd-syntax">C:\> ipconfig /all</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'ipconfig /all')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher la configuration IP complète (adresse MAC, DNS, DHCP, IPv6...)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">C:\> ipconfig /all
+Physical Address: 00-60-2F-84-45-02
+IPv4 Address: 192.168.1.10
+DHCP Server: 192.168.1.1
+DNS Servers: 8.8.8.8</div>
+        </div>
+        <div class="cmd-card p">
+          <div class="cmd-header">
+            <div class="cmd-syntax">C:\> ipconfig /release</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'ipconfig /release')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Libérer l'adresse IP obtenue par DHCP (avant de renouveler)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">C:\> ipconfig /release
+Lease Released. IP address: 0.0.0.0</div>
+        </div>
+        <div class="cmd-card p">
+          <div class="cmd-header">
+            <div class="cmd-syntax">C:\> ipconfig /renew</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'ipconfig /renew')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Renouveler/demander une nouvelle adresse IP via DHCP</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">C:\> ipconfig /renew
+IP Address: 192.168.1.15 obtained from DHCP</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Connectivité -->
+    <div class="category">
+      <div class="category-title">02 — Test de Connectivité</div>
+      <div class="cards-grid">
+        <div class="cmd-card p">
+          <div class="cmd-header">
+            <div class="cmd-syntax">C:\> ping IP</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'ping 192.168.1.1')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Tester la connectivité réseau vers une adresse IP (envoie 4 paquets ICMP)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">C:\> ping 192.168.1.1
+Reply from 192.168.1.1: bytes=32 time=1ms TTL=128
+Reply from 192.168.1.1: bytes=32 time=1ms TTL=128</div>
+        </div>
+        <div class="cmd-card p">
+          <div class="cmd-header">
+            <div class="cmd-syntax">C:\> ping IP -t</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'ping 192.168.1.1 -t')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Ping continu et illimité vers une IP (arrêter avec Ctrl+C)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">C:\> ping 192.168.1.1 -t
+Reply from 192.168.1.1: bytes=32 time<1ms
+Reply from 192.168.1.1: bytes=32 time<1ms
+... [Ctrl+C pour arrêter]</div>
+        </div>
+        <div class="cmd-card p">
+          <div class="cmd-header">
+            <div class="cmd-syntax">C:\> ping 127.0.0.1</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'ping 127.0.0.1')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Ping de l'interface de bouclage (loopback) — teste la pile TCP/IP locale</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">C:\> ping 127.0.0.1
+Reply from 127.0.0.1: bytes=32 time<1ms TTL=128</div>
+        </div>
+        <div class="cmd-card p">
+          <div class="cmd-header">
+            <div class="cmd-syntax">C:\> tracert IP</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'tracert 8.8.8.8')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Tracer le chemin des paquets jusqu'à la destination (affiche chaque routeur traversé)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">C:\> tracert 8.8.8.8
+1  192.168.1.1  1ms
+2  10.0.0.1     5ms
+3  8.8.8.8      20ms</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ARP et Routes -->
+    <div class="category">
+      <div class="category-title">03 — ARP & Table de Routage</div>
+      <div class="cards-grid">
+        <div class="cmd-card p">
+          <div class="cmd-header">
+            <div class="cmd-syntax">C:\> arp -a</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'arp -a')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher la table ARP du PC (correspondances IP ↔ MAC apprises)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">C:\> arp -a
+Internet Address  Physical Address   Type
+192.168.1.1       00-60-2f-84-45-02  dynamic
+192.168.1.10      00-50-79-66-68-00  dynamic</div>
+        </div>
+        <div class="cmd-card p">
+          <div class="cmd-header">
+            <div class="cmd-syntax">C:\> arp -d</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'arp -d')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Vider/supprimer toutes les entrées de la table ARP</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">C:\> arp -d
+[Table ARP effacée]</div>
+        </div>
+        <div class="cmd-card p">
+          <div class="cmd-header">
+            <div class="cmd-syntax">C:\> netstat -r</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'netstat -r')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher la table de routage du PC Windows</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">C:\> netstat -r
+Network Destination  Netmask    Gateway
+0.0.0.0              0.0.0.0    192.168.1.1
+192.168.1.0          255.255.255.0  On-link</div>
+        </div>
+        <div class="cmd-card p">
+          <div class="cmd-header">
+            <div class="cmd-syntax">C:\> route print</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'route print')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher la table de routage complète du PC (similaire à netstat -r)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">C:\> route print
+Active Routes:
+Network Destination  Netmask     Gateway
+0.0.0.0              0.0.0.0     192.168.1.1</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DNS et SSH -->
+    <div class="category">
+      <div class="category-title">04 — DNS & Connexion Distante</div>
+      <div class="cards-grid">
+        <div class="cmd-card p">
+          <div class="cmd-header">
+            <div class="cmd-syntax">C:\> nslookup NOM</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'nslookup google.com')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Résoudre un nom de domaine en adresse IP via le serveur DNS configuré</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">C:\> nslookup google.com
+Server: 8.8.8.8
+Address: 142.250.74.46</div>
+        </div>
+        <div class="cmd-card p">
+          <div class="cmd-header">
+            <div class="cmd-syntax">C:\> ssh -l USER IP</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'ssh -l admin 192.168.1.1')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Se connecter à distance en SSH à un équipement réseau Cisco</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">C:\> ssh -l admin 192.168.1.1
+Password: ****
+R1></div>
+        </div>
+        <div class="cmd-card p">
+          <div class="cmd-header">
+            <div class="cmd-syntax">C:\> telnet IP</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'telnet 192.168.1.1')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Se connecter à distance en Telnet (non chiffré — éviter en production)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">C:\> telnet 192.168.1.1
+Password:
+R1></div>
+        </div>
+        <div class="cmd-card p">
+          <div class="cmd-header">
+            <div class="cmd-syntax">C:\> netstat -an</div>
+            <button class="copy-btn" onclick="copyCmd(this, 'netstat -an')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher toutes les connexions réseau actives et les ports en écoute</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">C:\> netstat -an
+Proto  Local Address    Foreign Address  State
+TCP    0.0.0.0:80       0.0.0.0:0        LISTENING
+TCP    192.168.1.10:443 8.8.8.8:1234     ESTABLISHED</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end section-pc -->
+
+
+  <!-- ===== MIKROTIK SECTION ===== -->
+  <div class="section" id="section-mikrotik">
+    <div class="section-header">
+      <div class="section-icon m">🔴</div>
+      <div>
+        <div class="section-title m">MikroTik RouterOS</div>
+        <div class="section-desc">// Commandes CLI pour routeurs MikroTik (RouterOS)</div>
+      </div>
+    </div>
+
+    <!-- 01 Navigation -->
+    <div class="category">
+      <div class="category-title">01 — Navigation & Structure CLI</div>
+      <div class="cards-grid">
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Revenir à la racine du menu CLI MikroTik depuis n'importe quel sous-menu</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">[admin@MikroTik] /ip/address> /
+[admin@MikroTik] ></div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">..</div>
+            <button class="copy-btn" onclick="copyCmd(this, '..')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Remonter d'un niveau dans l'arborescence du menu CLI</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">[admin@MikroTik] /ip/address> ..
+[admin@MikroTik] /ip></div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">?</div>
+            <button class="copy-btn" onclick="copyCmd(this, '?')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher l'aide et la liste des commandes disponibles dans le menu actuel</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">[admin@MikroTik] > ?
+  interface  -- Interface configuration
+  ip         -- IP settings
+  system     -- System configuration</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">Tab</div>
+            <button class="copy-btn" onclick="copyCmd(this, '')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Auto-complétion des commandes (comme sur Linux) — appuyer 2x pour voir toutes les options</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">[admin@MikroTik] > /ip ad[TAB]
+/ip address</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/quit</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/quit')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Quitter la session CLI MikroTik (déconnexion)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">[admin@MikroTik] > /quit
+Connection closed.</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 02 Config de base -->
+    <div class="category">
+      <div class="category-title">02 — Configuration Système de Base</div>
+      <div class="cards-grid">
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/system identity set name=NOM</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/system identity set name=R1')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Changer le nom (hostname) du routeur MikroTik</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/system identity set name=RouterBenin
+[admin@RouterBenin] ></div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/system identity print</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/system identity print')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher le nom actuel du routeur</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/system identity print
+name: RouterBenin</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/system clock set date=JJ/MM/AAAA time=HH:MM:SS</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/system clock set date=22/03/2026 time=19:30:00')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Régler manuellement la date et l'heure du routeur</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/system clock set date=22/03/2026 time=19:30:00</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/system clock print</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/system clock print')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher l'heure et la date actuelles du routeur</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/system clock print
+       time: 19:30:00
+       date: mar/22/2026</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/system resource print</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/system resource print')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher les ressources système (CPU, RAM, version RouterOS, uptime)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/system resource print
+uptime: 2d3h15m
+version: 7.13.2
+cpu-load: 5%
+free-memory: 96.0MiB</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/system routerboard print</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/system routerboard print')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher les informations matérielles de la carte routeur (modèle, firmware)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/system routerboard print
+model: RB951Ui-2HnD
+serial-number: 4C9100F6E6DB
+firmware: 3.41</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/system reboot</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/system reboot')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Redémarrer le routeur MikroTik</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/system reboot
+Reboot, yes? [y/N]: y</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/system reset-configuration</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/system reset-configuration')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Réinitialiser le routeur à la configuration d'usine (efface tout)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/system reset-configuration
+Dangerous! Reset anyway? [y/N]: y</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 03 Utilisateurs et Mots de passe -->
+    <div class="category">
+      <div class="category-title">03 — Utilisateurs & Sécurité</div>
+      <div class="cards-grid">
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/user set admin password=MOT_DE_PASSE</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/user set admin password=Cisco123')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Changer le mot de passe du compte administrateur par défaut</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/user set admin password=MonMotDePasse2026</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/user add name=USER password=PASS group=full</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/user add name=technicien password=Tech123 group=full')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Créer un nouvel utilisateur avec un groupe de droits (full=admin, read=lecture seule, write=écriture)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/user add name=technicien password=Tech123 group=full</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/user print</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/user print')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Lister tous les utilisateurs configurés sur le routeur</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/user print
+# NAME     GROUP  ADDRESS
+0 admin    full
+1 technicien full</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/user remove NOM</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/user remove technicien')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Supprimer un utilisateur existant</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/user remove technicien</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/ip service set ssh disabled=no port=22</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/ip service set ssh disabled=no port=22')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Activer le service SSH sur le port 22</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/ip service set ssh disabled=no port=22</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/ip service set telnet disabled=yes</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/ip service set telnet disabled=yes')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Désactiver Telnet pour la sécurité (utiliser SSH à la place)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/ip service set telnet disabled=yes</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/ip service print</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/ip service print')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher tous les services réseau actifs (SSH, Telnet, Winbox, API...)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/ip service print
+# NAME     PORT  DISABLED
+0 telnet   23    yes
+1 ssh      22    no
+2 winbox   8291  no</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 04 Interfaces -->
+    <div class="category">
+      <div class="category-title">04 — Gestion des Interfaces</div>
+      <div class="cards-grid">
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/interface print</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/interface print')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Lister toutes les interfaces du routeur avec leur statut (actif/inactif)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/interface print
+# NAME     TYPE   MTU  MAC-ADDRESS
+0 ether1   ether  1500 D4:CA:6D:1A:2B:3C
+1 ether2   ether  1500 D4:CA:6D:1A:2B:3D
+2 wlan1    wlan   1500 D4:CA:6D:1A:2B:3E</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/interface set INTERFACE disabled=no</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/interface set ether1 disabled=no')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Activer une interface désactivée</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/interface set ether2 disabled=no</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/interface set INTERFACE disabled=yes</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/interface set ether1 disabled=yes')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Désactiver administrativement une interface</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/interface set ether2 disabled=yes</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/interface set INTERFACE name=NOM</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/interface set ether1 name=WAN')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Renommer une interface pour une identification plus claire</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/interface set ether1 name=WAN
+/interface set ether2 name=LAN</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/interface set INTERFACE comment=TEXTE</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/interface set ether1 comment=Lien-Internet')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Ajouter un commentaire/description à une interface</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/interface set ether1 comment=Lien-Internet</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/interface monitor-traffic INTERFACE</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/interface monitor-traffic ether1')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Surveiller le trafic en temps réel sur une interface</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/interface monitor-traffic ether1
+rx-bits-per-second: 1.2Mbps
+tx-bits-per-second: 856kbps</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 05 Adresses IP -->
+    <div class="category">
+      <div class="category-title">05 — Adresses IP</div>
+      <div class="cards-grid">
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/ip address add address=IP/PREFIX interface=INTERFACE</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/ip address add address=192.168.1.1/24 interface=ether2')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Assigner une adresse IPv4 avec son préfixe à une interface</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/ip address add address=192.168.1.1/24 interface=LAN
+/ip address add address=10.0.0.2/30 interface=WAN</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/ip address print</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/ip address print')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher toutes les adresses IP configurées sur les interfaces</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/ip address print
+# ADDRESS        NETWORK     INTERFACE
+0 192.168.1.1/24 192.168.1.0 LAN
+1 10.0.0.2/30    10.0.0.0    WAN</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/ip address remove NUMERO</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/ip address remove 0')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Supprimer une adresse IP par son numéro (affiché dans print)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/ip address remove 1</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/ip address set NUMERO address=NOUVELLE_IP/PREFIX</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/ip address set 0 address=192.168.10.1/24')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Modifier une adresse IP existante sans la supprimer</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/ip address set 0 address=192.168.10.1/24</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 06 Routage -->
+    <div class="category">
+      <div class="category-title">06 — Routage Statique & Table de Routage</div>
+      <div class="cards-grid">
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/ip route add dst-address=0.0.0.0/0 gateway=IP</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/ip route add dst-address=0.0.0.0/0 gateway=10.0.0.1')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Configurer la route par défaut (passerelle Internet) — équivalent Cisco : ip route 0.0.0.0 0.0.0.0</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/ip route add dst-address=0.0.0.0/0 gateway=10.0.0.1</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/ip route add dst-address=RESEAU/PREFIX gateway=IP</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/ip route add dst-address=192.168.2.0/24 gateway=192.168.1.2')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Ajouter une route statique vers un réseau distant via un next-hop</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/ip route add dst-address=192.168.2.0/24 gateway=192.168.1.2</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/ip route print</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/ip route print')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher la table de routage IPv4 complète</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/ip route print
+# DST-ADDRESS    GATEWAY    DISTANCE
+0 0.0.0.0/0     10.0.0.1   1
+1 192.168.1.0/24 LAN       0
+2 192.168.2.0/24 192.168.1.2 1</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/ip route remove NUMERO</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/ip route remove 2')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Supprimer une route statique par son numéro</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/ip route remove 2</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 07 DNS -->
+    <div class="category">
+      <div class="category-title">07 — DNS</div>
+      <div class="cards-grid">
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/ip dns set servers=IP1,IP2</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/ip dns set servers=8.8.8.8,8.8.4.4')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Configurer les serveurs DNS (jusqu'à plusieurs serveurs séparés par virgule)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/ip dns set servers=8.8.8.8,8.8.4.4</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/ip dns set allow-remote-requests=yes</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/ip dns set allow-remote-requests=yes')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Activer le serveur DNS local (les clients du réseau peuvent utiliser le routeur comme DNS)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/ip dns set allow-remote-requests=yes</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/ip dns print</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/ip dns print')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher la configuration DNS actuelle du routeur</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/ip dns print
+servers: 8.8.8.8, 8.8.4.4
+allow-remote-requests: yes</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/ip dns cache print</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/ip dns cache print')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher le cache DNS (résolutions récentes mémorisées)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/ip dns cache print
+NAME              TTL    DATA
+google.com        299    142.250.74.46</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/ip dns cache flush</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/ip dns cache flush')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Vider le cache DNS du routeur</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/ip dns cache flush</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 08 DHCP Server -->
+    <div class="category">
+      <div class="category-title">08 — Serveur DHCP</div>
+      <div class="cards-grid">
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/ip pool add name=POOL ranges=IP_DEBUT-IP_FIN</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/ip pool add name=pool-lan ranges=192.168.1.100-192.168.1.200')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Créer un pool d'adresses IP à distribuer via DHCP</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/ip pool add name=pool-lan ranges=192.168.1.100-192.168.1.200</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/ip dhcp-server add name=NOM interface=INTERFACE address-pool=POOL</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/ip dhcp-server add name=dhcp-lan interface=LAN address-pool=pool-lan')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Créer le serveur DHCP sur une interface avec le pool défini</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/ip dhcp-server add name=dhcp-lan interface=LAN address-pool=pool-lan disabled=no</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/ip dhcp-server network add address=RESEAU/PREFIX gateway=IP dns-server=IP</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/ip dhcp-server network add address=192.168.1.0/24 gateway=192.168.1.1 dns-server=8.8.8.8')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Configurer les options réseau DHCP (passerelle, DNS) envoyées aux clients</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/ip dhcp-server network add address=192.168.1.0/24 gateway=192.168.1.1 dns-server=8.8.8.8</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/ip dhcp-server lease print</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/ip dhcp-server lease print')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher la liste des baux DHCP actifs (clients connectés avec leur IP et MAC)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/ip dhcp-server lease print
+# ADDRESS        MAC-ADDRESS       STATUS
+0 192.168.1.101  00:50:79:66:68:00  bound
+1 192.168.1.102  00:0C:29:AB:12:34  bound</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/ip dhcp-server print</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/ip dhcp-server print')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher la configuration des serveurs DHCP actifs</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/ip dhcp-server print
+# NAME      INTERFACE  ADDRESS-POOL  DISABLED
+0 dhcp-lan  LAN        pool-lan      no</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 09 DHCP Client -->
+    <div class="category">
+      <div class="category-title">09 — Client DHCP (Interface WAN)</div>
+      <div class="cards-grid">
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/ip dhcp-client add interface=INTERFACE disabled=no</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/ip dhcp-client add interface=WAN disabled=no')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Activer le client DHCP sur l'interface WAN pour obtenir une IP automatiquement du FAI</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/ip dhcp-client add interface=ether1 disabled=no</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/ip dhcp-client print</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/ip dhcp-client print')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher le statut du client DHCP et l'IP obtenue</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/ip dhcp-client print
+# INTERFACE  STATUS   ADDRESS
+0 ether1     bound    10.0.0.5/30</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 10 NAT -->
+    <div class="category">
+      <div class="category-title">10 — NAT (Masquerade / Translation d'Adresses)</div>
+      <div class="cards-grid">
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/ip firewall nat add chain=srcnat out-interface=WAN action=masquerade</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/ip firewall nat add chain=srcnat out-interface=ether1 action=masquerade')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Activer le NAT masquerade — tous les paquets sortants vers Internet utilisent l'IP WAN du routeur</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/ip firewall nat add chain=srcnat out-interface=ether1 action=masquerade</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/ip firewall nat print</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/ip firewall nat print')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher toutes les règles NAT configurées</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/ip firewall nat print
+# CHAIN    ACTION      OUT-INTERFACE
+0 srcnat   masquerade  ether1</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/ip firewall nat add chain=dstnat dst-port=PORT protocol=tcp action=dst-nat to-addresses=IP to-ports=PORT</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/ip firewall nat add chain=dstnat dst-port=80 protocol=tcp action=dst-nat to-addresses=192.168.1.100 to-ports=80')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Redirection de port (Port Forwarding) — rediriger un port public vers un serveur interne</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/ip firewall nat add chain=dstnat dst-port=80 \
+  protocol=tcp action=dst-nat \
+  to-addresses=192.168.1.100 to-ports=80</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/ip firewall nat remove NUMERO</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/ip firewall nat remove 0')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Supprimer une règle NAT par son numéro</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/ip firewall nat remove 1</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 11 Firewall -->
+    <div class="category">
+      <div class="category-title">11 — Pare-feu (Firewall Filter)</div>
+      <div class="cards-grid">
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/ip firewall filter add chain=forward action=drop</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/ip firewall filter add chain=forward action=drop')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Bloquer tout le trafic transféré (à utiliser avec précaution, toujours mettre des règles ACCEPT avant)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/ip firewall filter add chain=input action=accept connection-state=established
+/ip firewall filter add chain=input action=drop</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/ip firewall filter add chain=input src-address=IP action=drop</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/ip firewall filter add chain=input src-address=10.0.0.5 action=drop')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Bloquer une adresse IP spécifique en entrée</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/ip firewall filter add chain=input src-address=10.0.0.5 action=drop</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/ip firewall filter print</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/ip firewall filter print')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher toutes les règles de pare-feu actives</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/ip firewall filter print
+# CHAIN   ACTION  SRC-ADDRESS
+0 input   accept
+1 input   drop    10.0.0.5</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/ip firewall filter remove NUMERO</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/ip firewall filter remove 1')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Supprimer une règle de pare-feu par son numéro</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/ip firewall filter remove 1</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 12 ARP -->
+    <div class="category">
+      <div class="category-title">12 — ARP & Voisins</div>
+      <div class="cards-grid">
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/ip arp print</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/ip arp print')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher la table ARP (correspondances IP ↔ MAC apprises)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/ip arp print
+# ADDRESS        MAC-ADDRESS        INTERFACE
+0 192.168.1.100  00:50:79:66:68:00  LAN
+1 192.168.1.101  00:0C:29:AB:12:34  LAN</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/ip arp flush</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/ip arp flush')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Vider la table ARP du routeur</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/ip arp flush</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/ip neighbor print</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/ip neighbor print')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher les équipements voisins découverts via CDP/LLDP/MNDP sur le réseau</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/ip neighbor print
+# INTERFACE ADDRESS       IDENTITY  PLATFORM
+0 LAN       192.168.1.5   Switch1   MikroTik</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 13 Outils de diagnostic -->
+    <div class="category">
+      <div class="category-title">13 — Outils de Diagnostic</div>
+      <div class="cards-grid">
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/ping IP</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/ping 192.168.1.1')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Tester la connectivité réseau vers une adresse IP (Ctrl+C pour arrêter)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/ping 8.8.8.8
+HOST       SIZE TTL TIME  STATUS
+8.8.8.8    56   55  12ms  echo reply
+8.8.8.8    56   55  11ms  echo reply</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/ping IP count=NOMBRE</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/ping 8.8.8.8 count=4')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Ping limité à un nombre de paquets précis</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/ping 8.8.8.8 count=4
+sent=4 received=4 packet-loss=0%</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/tool traceroute IP</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/tool traceroute 8.8.8.8')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Tracer le chemin des paquets jusqu'à la destination (affiche chaque routeur traversé)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/tool traceroute 8.8.8.8
+#  ADDRESS       LOSS  SENT  LAST  AVG
+1  10.0.0.1      0%    3     1ms   1ms
+2  8.8.8.8       0%    3     12ms  12ms</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/tool bandwidth-test address=IP direction=both</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/tool bandwidth-test address=192.168.1.100 direction=both')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Tester la bande passante entre deux routeurs MikroTik (nécessite un serveur BTest)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/tool bandwidth-test address=192.168.1.2 direction=both
+tx-current: 94.5Mbps
+rx-current: 87.2Mbps</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/tool flood-ping IP</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/tool flood-ping 192.168.1.1')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Ping rapide en rafale pour tester la latence et la perte de paquets sous charge</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/tool flood-ping 192.168.1.1</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/tool netwatch add host=IP interval=30s</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/tool netwatch add host=8.8.8.8 interval=30s')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Surveiller en continu la disponibilité d'un hôte (alerte si inaccessible)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/tool netwatch add host=8.8.8.8 interval=30s</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 14 Logs -->
+    <div class="category">
+      <div class="category-title">14 — Journaux (Logs)</div>
+      <div class="cards-grid">
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/log print</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/log print')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher les journaux système du routeur (erreurs, connexions, événements)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/log print
+19:30:01 system,info router rebooted
+19:30:05 dhcp,info assigned 192.168.1.101 to 00:50:79:66:68:00</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/log print where topics~"SUJET"</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/log print where topics~\"dhcp\"')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Filtrer les logs par sujet (dhcp, firewall, system, interface...)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/log print where topics~"dhcp"
+19:30:05 dhcp,info assigned 192.168.1.101</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 15 Sauvegarde -->
+    <div class="category">
+      <div class="category-title">15 — Sauvegarde & Restauration</div>
+      <div class="cards-grid">
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/system backup save name=NOM</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/system backup save name=backup-2026')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Sauvegarder toute la configuration dans un fichier binaire (.backup)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/system backup save name=backup-2026
+Configuration backup saved</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/system backup load name=NOM</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/system backup load name=backup-2026')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Restaurer une configuration depuis un fichier de sauvegarde</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/system backup load name=backup-2026
+Restore and reboot? [y/N]: y</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/export file=NOM</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/export file=config-backup')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Exporter la configuration en texte lisible (.rsc) — peut être édité et réimporté</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/export file=config-2026
+# Saved as config-2026.rsc</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/import file=NOM.rsc</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/import file=config-2026.rsc')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Importer et exécuter un fichier de configuration texte (.rsc)</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/import file=config-2026.rsc
+Script file loaded and executed</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/file print</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/file print')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Lister tous les fichiers stockés dans la mémoire flash du routeur</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/file print
+# NAME              TYPE     SIZE
+0 backup-2026.backup backup  23KiB
+1 config-2026.rsc   script  8KiB</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 16 Wifi -->
+    <div class="category">
+      <div class="category-title">16 — Configuration Wi-Fi (Wireless)</div>
+      <div class="cards-grid">
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/interface wireless print</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/interface wireless print')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher les interfaces Wi-Fi disponibles et leur configuration</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/interface wireless print
+# NAME   SSID      BAND    FREQUENCY
+0 wlan1  MikroTik  2GHz    2437MHz</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/interface wireless set wlan1 ssid=NOM_WIFI mode=ap-bridge</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/interface wireless set wlan1 ssid=MonWifi mode=ap-bridge')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Configurer le nom du réseau Wi-Fi (SSID) et activer le mode point d'accès</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/interface wireless set wlan1 ssid=ReseauBenin mode=ap-bridge</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/interface wireless security-profiles add name=PROFIL mode=dynamic-keys authentication-types=wpa2-psk wpa2-pre-shared-key=MOT_DE_PASSE</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/interface wireless security-profiles add name=profil-wifi mode=dynamic-keys authentication-types=wpa2-psk wpa2-pre-shared-key=MotDePasse123')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Créer un profil de sécurité Wi-Fi WPA2 avec mot de passe</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/interface wireless security-profiles add \
+  name=profil-wifi mode=dynamic-keys \
+  authentication-types=wpa2-psk \
+  wpa2-pre-shared-key=MotDePasse2026</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/interface wireless set wlan1 security-profile=PROFIL</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/interface wireless set wlan1 security-profile=profil-wifi')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Appliquer un profil de sécurité à l'interface Wi-Fi</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/interface wireless set wlan1 security-profile=profil-wifi</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/interface wireless registration-table print</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/interface wireless registration-table print')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher les clients Wi-Fi actuellement connectés au point d'accès</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/interface wireless registration-table print
+# INTERFACE  MAC-ADDRESS        SIGNAL  TX-RATE
+0 wlan1      00:50:79:66:68:00  -65dBm  54Mbps</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 17 VLAN -->
+    <div class="category">
+      <div class="category-title">17 — VLAN (Virtual LAN)</div>
+      <div class="cards-grid">
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/interface vlan add name=VLAN_NOM vlan-id=ID interface=INTERFACE</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/interface vlan add name=VLAN10 vlan-id=10 interface=ether2')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Créer une interface VLAN avec un ID sur une interface physique</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/interface vlan add name=VLAN10 vlan-id=10 interface=ether2
+/interface vlan add name=VLAN20 vlan-id=20 interface=ether2</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/interface vlan print</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/interface vlan print')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher tous les VLANs configurés sur le routeur</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/interface vlan print
+# NAME    VLAN-ID  INTERFACE
+0 VLAN10  10       ether2
+1 VLAN20  20       ether2</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 18 NTP -->
+    <div class="category">
+      <div class="category-title">18 — NTP (Synchronisation Horaire)</div>
+      <div class="cards-grid">
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/system ntp client set enabled=yes servers=IP_NTP</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/system ntp client set enabled=yes servers=pool.ntp.org')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Synchroniser automatiquement l'horloge du routeur avec un serveur NTP</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/system ntp client set enabled=yes servers=pool.ntp.org</div>
+        </div>
+
+        <div class="cmd-card m">
+          <div class="cmd-header">
+            <div class="cmd-syntax">/system ntp client print</div>
+            <button class="copy-btn" onclick="copyCmd(this, '/system ntp client print')">COPIER</button>
+          </div>
+          <div class="cmd-role"><strong>Rôle :</strong> Afficher l'état de la synchronisation NTP</div>
+          <div class="example-label">Exemple</div>
+          <div class="cmd-example">/system ntp client print
+enabled: yes
+server: pool.ntp.org
+status: synchronized</div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- end section-mikrotik -->
+
+</main>
+
+<footer>
+  <div class="footer-dev">
+    <span class="dev-label">Développé par</span>
+    <span class="dev-name">LANDJIDE Urbain Sedami</span>
+  </div>
+  <p>CCNA 1 — <span>Guide des Commandes IOS & RouterOS</span> — Cisco · MikroTik</p>
+  <p style="margin-top:8px; font-size:10px;">Switch · Routeur Cisco · PC/Hôte · MikroTik RouterOS — Toutes les commandes essentielles</p>
+</footer>
+
+<script>
+  function showSection(name, btn) {
+    // Hide all sections
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    
+    // Show target
+    document.getElementById('section-' + name).classList.add('active');
+    btn.classList.add('active');
+    
+    // Clear search
+    document.getElementById('searchInput').value = '';
+    document.querySelectorAll('.cmd-card').forEach(c => c.style.display = '');
+  }
+
+  function filterCards(query) {
+    const q = query.toLowerCase().trim();
+    const activeSection = document.querySelector('.section.active');
+    const cards = activeSection.querySelectorAll('.cmd-card');
+    
+    cards.forEach(card => {
+      const text = card.innerText.toLowerCase();
+      card.style.display = (!q || text.includes(q)) ? '' : 'none';
+    });
+
+    // Show/hide categories based on visible cards
+    activeSection.querySelectorAll('.category').forEach(cat => {
+      const visible = [...cat.querySelectorAll('.cmd-card')].some(c => c.style.display !== 'none');
+      cat.style.display = visible ? '' : 'none';
+    });
+  }
+
+  function copyCmd(btn, cmd) {
+    navigator.clipboard.writeText(cmd).then(() => {
+      btn.textContent = '✓ OK';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = 'COPIER';
+        btn.classList.remove('copied');
+      }, 1500);
+    }).catch(() => {
+      btn.textContent = '✓ OK';
+      setTimeout(() => btn.textContent = 'COPIER', 1500);
+    });
+  }
+</script>
+
+</body>
+</html>
